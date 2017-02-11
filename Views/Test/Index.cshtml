@@ -1,0 +1,57 @@
+
+@{
+     Layout = "_Layout";
+}
+
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@functions{
+    public string GetAntiXsrfRequestToken()
+    {
+        return Xsrf.GetAndStoreTokens(Context).RequestToken;
+    }
+}
+<br/><br/>
+<div class="row">
+    <div class="form-group">
+        <label  class="col-md-2 control-label">Value</label>
+        <div class="col-md-10">
+            <input id="txtValue" class="form-control" />
+        </div>
+    </div>
+    <br/><br/>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <button  id ="btnSubmit" type="button" class="btn btn-default">Submit</button>
+        </div>
+    </div>
+</div>
+</div>
+@section Scripts {
+ <script type="text/javascript">
+     $(function(){
+        
+        $("#btnSubmit").on("click",function(){
+            var value =$("#txtValue").val();
+            var token = '@GetAntiXsrfRequestToken()';
+            $.ajax({
+                url:"/Test/Index",
+                type:"Post",
+                datatype: "json",
+                contentType:"application/json",
+                 headers: {
+                        "RequestVerificationToken": token
+                    },
+                data: {
+                            "value" :value
+                        },
+                success:function(data){
+                    alert(data.status)
+                },
+                error: function(er){
+                    alert("error Occured!");
+                }
+            });
+        });
+     });
+ </script>
+}
